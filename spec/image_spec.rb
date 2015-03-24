@@ -3,8 +3,8 @@ require 'spec_helper'
 describe Versionable::Image do
   let(:image) do
     described_class.new OpenStruct.new(
-      url: 'https://s3.amazonaws.com/ksr/assets/moo.png'
-      ), :url, :accessor do
+      image_url: 'https://s3.amazonaws.com/ksr/assets/moo.png'
+      ), :image_url, :accessor do
       version :form_thumbnail, width: 100, height: 150 do
         filter :quality, 50
       end
@@ -14,7 +14,7 @@ describe Versionable::Image do
 
   it 'should responds to :url' do
     expect(image).to respond_to(:url)
-    expect(image.url).to eq('https://s3.amazonaws.com/ksr/assets/moo.png')
+    expect(image.url).to eq('http://thumbor_server.net/-Fusfhan-Z17oSrW-2upcdvmo8o=//https://s3.amazonaws.com/ksr/assets/moo.png')
   end
 
   it 'should responds to version' do
@@ -25,11 +25,13 @@ describe Versionable::Image do
   it 'should be rendered as a json' do
     expect(image).to respond_to(:to_json)
     expect(image.to_json).to eq(
-      '{"url":"https://s3.amazonaws.com/ksr/assets/moo.png","form_thumbnail":' \
+      '{"url":"http://thumbor_server.net/-Fusfhan-Z17oSrW-2upcdvmo8o=//https://s3.amazonaws.com/ksr/assets/moo.png","form_thumbnail":' \
       '{"url":"http://thumbor_server.net/JCvCnwX3k3NBcHOF_HICTy9dEk8=/100x150' \
       '/filters:quality(50)/https://s3.amazonaws.com/ksr/assets/moo.png"},"fo' \
       'rm_thumbnail_2":{"url":"http://thumbor_server.net/pzNWZlQuWGNjwy2Ix-83' \
       'Nc4gswY=/100x150/https://s3.amazonaws.com/ksr/assets/moo.png"}}')
+      #{\"url\":\"http://thumbor_server.net/-Fusfhan-Z17oSrW-2upcdvmo8o=//https://s3.amazonaws.com/ksr/assets/moo.png\",\"form_thumbnail\":{\"url\":\"http://thumbor_server.net/JCvCnwX3k3NBcHOF_HICTy9dEk8=/100x150/filters:quality(50)/https://s3.amazonaws.com/ksr/assets/moo.png\"},\"form_thumbnail_2\":{\"url\":\"http://thumbor_server.net/pzNWZlQuWGNjwy2Ix-83Nc4gswY=/100x150/https://s3.amazonaws.com/ksr/assets/moo.png\"}}
+
   end
 
   context 'when the image is valid' do

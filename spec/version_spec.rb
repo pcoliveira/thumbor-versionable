@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Versionable::Version do
   let(:version_full) do
     described_class.new OpenStruct.new(
-      url: 'https://s3.amazonaws.com/ksr/assets/moo.png'
+      decoded_url: 'https://s3.amazonaws.com/ksr/assets/moo.png'
     ), width: 100, height: 150 do
       crop from: { x: 10, y: 35 }, to: { x: 34, y: 50 }
       horizontal_align :center
@@ -13,7 +13,7 @@ describe Versionable::Version do
 
   let(:version_empty) do
     described_class.new OpenStruct.new(
-      url: 'https://s3.amazonaws.com/ksr/assets/moo.png'
+      decoded_url: 'https://s3.amazonaws.com/ksr/assets/moo.png'
     ), {}
   end
 

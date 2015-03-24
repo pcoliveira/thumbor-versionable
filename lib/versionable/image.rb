@@ -14,6 +14,7 @@ module Versionable
     end
 
     def url(*args)
+
       if (version_key = args.first) && versions.has_key?(version_key)
         versions[version_key].url
       else
@@ -59,6 +60,16 @@ module Versionable
             "Use #fetch_metadata to get it.'
     end
 
+    def decoded_url
+      URI.decode(store_path).gsub(/[+ ]/, '%20')
+      # We need gsub to change '+' to ' ' when the url is decoded,
+      # but it doesn't, so we karate-chop 'em into place.
+    end
+
+    def blank?(obj)
+      obj.respond_to?(:empty?) ? !!obj.empty? : !obj
+    end
+
     private
 
     attr_reader :model, :column, :accessor, :versions
@@ -83,19 +94,10 @@ module Versionable
       end]
     end
 
-    def blank?(obj)
-      obj.respond_to?(:empty?) ? !!obj.empty? : !obj
-    end
-
     def signed_path options_url
       key =  Versionable.config.secret_key
-      Base64.urlsafe_encode64(OpenSSL::HMAC.digest('sha1', key, [options_url,decoded_url].join('/')))
-    end
-
-    def decoded_url
-      URI.decode(store_path).gsub(/[+ ]/, '%20')
-      # We need gsub to change '+' to ' ' when the url is decoded,
-      # but it doesn't, so we karate-chop 'em into place.
+      path = [options_url,decoded_url].join('/')
+      [Base64.urlsafe_encode64(OpenSSL::HMAC.digest('sha1', key, path)),path].join('/')
     end
 
   end

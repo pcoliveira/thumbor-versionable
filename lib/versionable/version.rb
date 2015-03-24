@@ -65,14 +65,12 @@ module Versionable
       ].reject(&:nil?).join('/')
     end
 
-    def image_url
-      image.url
-    end
+    # def image_url
+    #   image.url
+    # end
 
     def decoded_url
-      URI.decode(image_url).gsub(/[+ ]/, '%20')
-      # We need gsub to change '+' to ' ' when the url is decoded,
-      # but it doesn't, so we karate-chop 'em into place.
+      image.decoded_url
     end
 
     def filter(name, values = nil)
@@ -167,4 +165,3 @@ module Versionable
     end
   end
 end
-

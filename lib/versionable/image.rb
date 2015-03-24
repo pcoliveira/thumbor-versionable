@@ -13,7 +13,15 @@ module Versionable
       instance_eval(&blk) if block_given?
     end
 
-    def url
+    def url(*args)
+      if (version_key = args.first) && versions.has_key?(version_key)
+        versions[version_key].url
+      else
+        [Versionable.config.thumbor_server,signed_path('')].join('/')
+      end
+    end
+
+    def store_path
       model.send(column)
     end
 
@@ -78,6 +86,17 @@ module Versionable
     def blank?(obj)
       obj.respond_to?(:empty?) ? !!obj.empty? : !obj
     end
+
+    def signed_path options_url
+      key =  Versionable.config.secret_key
+      Base64.urlsafe_encode64(OpenSSL::HMAC.digest('sha1', key, [options_url,decoded_url].join('/')))
+    end
+
+    def decoded_url
+      URI.decode(store_path).gsub(/[+ ]/, '%20')
+      # We need gsub to change '+' to ' ' when the url is decoded,
+      # but it doesn't, so we karate-chop 'em into place.
+    end
+
   end
 end
-

@@ -22,6 +22,10 @@ module Versionable
       end
     end
 
+    def to_s
+      model.send(column)
+    end
+
     def store_path
       model.send(column)
     end
@@ -41,7 +45,7 @@ module Versionable
     def fetch_metadata
       metadata_url = URI.parse(Versionable::Version.new(self, meta: true).url)
       json_data = Net::HTTP.get(metadata_url)
-      blank?(json_data) ? nil : JSON.parse(Net::HTTP.get(metadata_url))
+      object_is_blank?(json_data) ? nil : JSON.parse(Net::HTTP.get(metadata_url))
     end
 
     def height_from_metadata(hash)
@@ -66,9 +70,6 @@ module Versionable
       # but it doesn't, so we karate-chop 'em into place.
     end
 
-    def blank?(obj)
-      obj.respond_to?(:empty?) ? !!obj.empty? : !obj
-    end
 
     private
 
@@ -84,6 +85,10 @@ module Versionable
 
     def version(name, options, &blk)
       @versions[name] = Versionable::Version.new(self, options, &blk)
+    end
+
+    def object_is_blank?(obj)
+      obj.respond_to?(:empty?) ? !!obj.empty? : !obj
     end
 
     def serializable_hash(_options = nil)
